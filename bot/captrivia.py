@@ -10,7 +10,7 @@ class Captrivia:
     # Start a new game.  Saves the session id for future use (this is a
     # single-threaded bot, for now).
     def start_game(self):
-        result = requests.post(self.url + "/game/start")
+        result = requests.post(self.url + "/game/start", timeout=60)
         self.session_id = result.json()["sessionId"]
 
     # Get a set of questions.  This isn't really necessary as the endpoint is just
@@ -19,7 +19,7 @@ class Captrivia:
     # look more like a human.
     # Returns a list of questions with 'id', 'questionText', and 'options' properties.
     def get_questions(self):
-        result = requests.get(self.url + "/questions")
+        result = requests.get(self.url + "/questions", timeout=60)
         return result.json()
 
     # Answer a question.  Returns whether we were correct
@@ -32,7 +32,7 @@ class Captrivia:
             "questionId": question_id,
             "answer": answer
         }
-        result = requests.post(self.url + "/answer", json=body)
+        result = requests.post(self.url + "/answer", json=body, timeout=60)
 
         # Return whether we were correct
         return result.json()["correct"]
@@ -45,7 +45,7 @@ class Captrivia:
         body = {
             "sessionId": self.session_id
         }
-        result = requests.post(self.url + "/game/end", json=body)
+        result = requests.post(self.url + "/game/end", json=body, timeout=60)
         score = result.json()["finalScore"]
 
         # Clear the sesssion id and return the score
