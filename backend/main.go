@@ -12,6 +12,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hungdnguyen/captrivia/backend/game"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -82,7 +84,7 @@ func main() {
 // setupServer configures and returns a new Gin instance with all routes.
 // It also returns an error if there is a failure in setting up the server, e.g. loading questions.
 func setupServer() (*gin.Engine, error) {
-	questions, err := loadQuestions()
+	questions, err := game.loadQuestions()
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +122,7 @@ func (gs *GameServer) StartGameHandler(c *gin.Context) {
 }
 
 func (gs *GameServer) QuestionsHandler(c *gin.Context) {
-	shuffledQuestions := shuffleQuestions(gs.Questions)
+	shuffledQuestions := game.shuffleQuestions(gs.Questions)
 	c.JSON(http.StatusOK, shuffledQuestions[:10])
 }
 
@@ -184,32 +186,32 @@ func (gs *GameServer) checkAnswer(questionID string, submittedAnswer int) (bool,
 	return false, errors.New("question not found")
 }
 
-func shuffleQuestions(questions []Question) []Question {
-	rand.Seed(time.Now().UnixNano())
-	qs := make([]Question, len(questions))
+// func shuffleQuestions(questions []Question) []Question {
+// 	rand.Seed(time.Now().UnixNano())
+// 	qs := make([]Question, len(questions))
 
-	// Copy the questions manually, instead of with copy(), so that we can remove
-	// the CorrectIndex property
-	for i, q := range questions {
-		qs[i] = Question{ID: q.ID, QuestionText: q.QuestionText, Options: q.Options}
-	}
+// 	// Copy the questions manually, instead of with copy(), so that we can remove
+// 	// the CorrectIndex property
+// 	for i, q := range questions {
+// 		qs[i] = Question{ID: q.ID, QuestionText: q.QuestionText, Options: q.Options}
+// 	}
 
-	rand.Shuffle(len(qs), func(i, j int) {
-		qs[i], qs[j] = qs[j], qs[i]
-	})
-	return qs
-}
+// 	rand.Shuffle(len(qs), func(i, j int) {
+// 		qs[i], qs[j] = qs[j], qs[i]
+// 	})
+// 	return qs
+// }
 
-func loadQuestions() ([]Question, error) {
-	fileBytes, err := ioutil.ReadFile("questions.json")
-	if err != nil {
-		return nil, err
-	}
+// func loadQuestions() ([]Question, error) {
+// 	fileBytes, err := ioutil.ReadFile("questions.json")
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	var questions []Question
-	if err := json.Unmarshal(fileBytes, &questions); err != nil {
-		return nil, err
-	}
+// 	var questions []Question
+// 	if err := json.Unmarshal(fileBytes, &questions); err != nil {
+// 		return nil, err
+// 	}
 
-	return questions, nil
-}
+// 	return questions, nil
+// }
