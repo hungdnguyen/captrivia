@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hungdnguyen/captrivia/backend/game"
+	"github.com/hungdnguyen/captrivia/questions/game"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
